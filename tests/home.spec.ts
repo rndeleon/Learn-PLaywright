@@ -1,4 +1,6 @@
 import {test, expect} from "@playwright/test";
+import { log } from "console";
+import { off } from "process";
 
 test.describe("Home", () => {
     test("Open Homepage and verify title",async ({page}) => {
@@ -43,10 +45,91 @@ test("Verify Home link is enabled using CSS selector and text selector", async (
     await page.goto("https://practice.sdetunicorns.com");
 
     //Find Home text inside primary menu
-    // const homeText = await page.locator('#zak-primary-menu >> text=Home');
+    const homeTextCss = await page.locator('#zak-primary-menu >> text=Home');
 
     //Using combination of CSS and text more proper than previous command
-    const homeText = await page.locator('#zak-primary-menu :text("Home")');
+    const homeCssText = await page.locator('#zak-primary-menu :text("Home")');
+
+    const homeCssHasText = await page.locator('#zak-primary-menu:has-text("Home")');
     //Expect element to be enabled
-    await expect(homeText).toBeEnabled();
+    await expect(homeCssHasText).toBeEnabled();
+})
+
+
+test("Verify Search icon and click using xpath", async ({page}) => {
+    await page.goto("https://practice.sdetunicorns.com");
+
+    //Find the search icon
+    const searchIcon = await page.locator(`
+    //div[@class="zak-header-actions zak-header-actions--desktop"]
+    //a[@class="zak-header-search__toggle"]
+    `);
+
+    //Expect element to be enabled
+    await expect(searchIcon).toBeVisible();
+})
+
+test("Verify Text of all nav link", async ({page}) => {
+    const expectedNavlinkstext = [
+        "Home",
+        "About",
+        "Shop",
+        "Blog",
+        "Contact",
+        "My account"
+    ];
+
+    //Open URL
+    await page.goto("https://practice.sdetunicorns.com");
+
+    //Find the nav Link containing multiple Menu
+    const navLinks = page.locator('#zak-primary-menu li[id*=menu]');
+
+    log (await navLinks.allTextContents())
+    //Verify nav links test
+    expect(await navLinks.allTextContents()).toEqual(expectedNavlinkstext);
+})
+
+
+test("Verify Text of nth nav link", async ({page}) => {
+    const expectedNavlinkstext = [
+        "Home",
+        "About",
+        "Shop",
+        "Blog",
+        "Contact",
+        "My account"
+    ];
+
+    //Open URL
+    await page.goto("https://practice.sdetunicorns.com");
+
+    //Find the nav Link containing multiple Menu
+    const navLinks = page.locator('#zak-primary-menu li[id*=menu]').nth(0)
+
+    //Verify nav link single text
+    expect(await navLinks.textContent()).toEqual(expectedNavlinkstext[0]);
+})
+
+test("Verify Text of nav links using loop", async ({page}) => {
+    const expectedNavlinkstext = [
+        "Home",
+        "About",
+        "Shop",
+        "Blog",
+        "Contact",
+        "My account"
+    ];
+
+    //Open URL
+    await page.goto("https://practice.sdetunicorns.com");
+
+    //Find the nav Link containing multiple Menu
+    const navLinks = page.locator('#zak-primary-menu li[id*=menu]');
+
+    //Pring out all the list
+    for (const navText of await navLinks.elementHandles()) {
+        console.log(await navText.textContent())
+    }
+    
 })
