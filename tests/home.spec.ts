@@ -1,58 +1,57 @@
 import {test, expect} from "@playwright/test";
 import { log } from "console";
 import { off } from "process";
+import HomePage from "../pages/home.page";
 
-test.describe("Home", () => {
-    test("Open Homepage and verify title",async ({page}) => {
-        await page.goto("https://practice.sdetunicorns.com");
+test.describe("Home Page test", () => {
+    let homePage: HomePage;
 
-        await expect(page).toHaveTitle("Practice E-Commerce Site – SDET Unicorns"); 
-    });
-});
-
-test.describe("About", () => {
-    test("Open about page and verify title", async ({page}) => {
-        await page.goto("https://practice.sdetunicorns.com/about/");
-
-        await expect(page).toHaveTitle("About – Practice E-Commerce Site");     
+    test.beforeEach(async ({ page }) => {
+        homePage = new HomePage(page);
+        await homePage.navigate();
     })
-})
 
-test.describe("Click Get Started using CSS selector", () => {
-    test("Click get started", async ({page}) => {
-        await page.goto("https://practice.sdetunicorns.com");
-
+    test("Open Homepage and verify title",async ({page}) => {
         await expect(page).toHaveTitle("Practice E-Commerce Site – SDET Unicorns"); 
-        //Locate element and click
-        await page.locator("#get-started").click();
+    })
 
+
+// test.describe("About", () => {
+//     test("Open about page and verify title", async ({page}) => {
+//         await page.goto("https://practifce.sdetunicorns.com/about/");
+
+//         await expect(page).toHaveTitle("About – Practice E-Commerce Site");     
+//     })
+// })
+
+    test("Click Get Started using CSS selector", async ({page}) => {
+        await expect(page).toHaveTitle("Practice E-Commerce Site – SDET Unicorns"); 
+   
+        await homePage.getStartedBtn.click()
+        
         await expect(page).toHaveURL(/.*get-started/);
         
     })
-})
 
-test("Verify text using text locator", async ({page}) => {
-    await page.goto("https://practice.sdetunicorns.com");
+    test("Verify text using text locator", async ({page}) => {
+        // const headingText = await page.locator('text=Think different. Make different.')
+        const headingText = await homePage.headingText
+        await expect(headingText).toBeVisible();
 
-    const headingText = await page.locator('text=Think different. Make different.')
+        await expect(page.getByText("Think different. Make different.")).toBeVisible();  
+    })
 
-    await expect(headingText).toBeVisible();
+    test("Verify Home link is enabled using CSS selector and text selector", async ({page}) => {
+        //Find Home text inside primary menu
+        const homeTextCss = await page.locator('#zak-primary-menu >> text=Home');
 
-    await expect(page.getByText("Think different. Make different.")).toBeVisible();  
-})
+        //Using combination of CSS and text more proper than previous command
+        const homeCssText = await page.locator('#zak-primary-menu :text("Home")');
 
-test("Verify Home link is enabled using CSS selector and text selector", async ({page}) => {
-    await page.goto("https://practice.sdetunicorns.com");
-
-    //Find Home text inside primary menu
-    const homeTextCss = await page.locator('#zak-primary-menu >> text=Home');
-
-    //Using combination of CSS and text more proper than previous command
-    const homeCssText = await page.locator('#zak-primary-menu :text("Home")');
-
-    const homeCssHasText = await page.locator('#zak-primary-menu:has-text("Home")');
-    //Expect element to be enabled
-    await expect(homeCssHasText).toBeEnabled();
+        const homeCssHasText = await page.locator('#zak-primary-menu:has-text("Home")');
+        //Expect element to be enabled
+        await expect(homeCssHasText).toBeEnabled();
+    })
 })
 
 
@@ -133,3 +132,16 @@ test("Verify Text of nav links using loop", async ({page}) => {
     }
     
 })
+
+test("Click get started using CSS selector on page", async ({page}) => {
+    homePage = new HomePage(page);
+    
+    //Open URL
+    await page.goto("https://practice.sdetunicorns.com");
+
+    
+})
+
+function async(arg0: { page: any; }): (args: import("playwright/test").PlaywrightTestArgs & import("playwright/test").PlaywrightTestOptions & import("playwright/test").PlaywrightWorkerArgs & import("playwright/test").PlaywrightWorkerOptions, testInfo: import("playwright/test").TestInfo) => Promise<any> | any {
+    throw new Error("Function not implemented.");
+}

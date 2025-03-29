@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import exp from 'constants';
+import CartPage from '../pages/cart.page';
 const path = require('path')
 
 test.describe('Upload File', () => {
@@ -55,6 +56,8 @@ test.describe('Upload File from hidden path', () => {
 })
 
 test.describe('Upload File Wait', () => {
+    let cartPage : CartPage;
+
     test('Wait for state', async ({ page }) => {
         //Goto URL
         await page.goto("https://practice.sdetunicorns.com/cart/");
@@ -97,4 +100,29 @@ test.describe('Upload File Wait', () => {
         await expect(page.locator('#wfu_messageblock_header_1_label_1'))
         .toContainText('uploaded successfully', {timeout: 15000});
     })
+})
+
+test.describe('Upload Multiple File', () => {
+    let cartPage : CartPage;
+
+    const fileName = ['logotitle.png','3mb-file.pdf']
+
+    for (const name of fileName) {
+        test(`Should upload a ${name}`, async ({ page }) => {
+            cartPage = new CartPage(page);
+            //Goto URL
+            await page.goto("https://practice.sdetunicorns.com/cart/");
+            //Confirm correct URL
+            await expect(page).toHaveTitle("Cart – Practice E-Commerce Site");
+
+            //Provide path for the sample file to be uploaded
+            const filePath = path.join(__dirname,`../data/${name}`);
+
+            cartPage.uploadComponent().uploadFile(filePath);
+
+            //Assert file upload
+            await expect(cartPage.uploadComponent().successTxt)
+            .toContainText('uploaded successfully', {timeout: 15000});
+        })
+    }
 })
