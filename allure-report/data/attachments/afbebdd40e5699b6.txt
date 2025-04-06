@@ -1,0 +1,226 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Contact >> Fill contact form and verify success message
+- Location: /Users/renzdeleon/Documents/GitHub/Learn-PLaywright/tests/contact.spec.ts:40:9
+
+# Error details
+
+```
+Error: expect(received).toBeLessThan(expected)
+
+Expected: < 1
+Received:   1
+    at /Users/renzdeleon/Documents/GitHub/Learn-PLaywright/tests/contact.spec.ts:56:41
+```
+
+# Page snapshot
+
+```yaml
+- link "Skip to content"
+- banner:
+  - link "Practice E-Commerce Site":
+    - img "Practice E-Commerce Site"
+  - paragraph:
+    - link "Practice E-Commerce Site"
+  - paragraph: SDET Unicorns
+  - navigation:
+    - list:
+      - listitem:
+        - link "Home"
+      - listitem:
+        - link "About"
+      - listitem:
+        - link "Shop"
+      - listitem:
+        - link "Blog"
+      - listitem:
+        - link "Contact"
+      - listitem:
+        - link "My account"
+  - link:
+    - img
+  - listitem:
+    - link "0":
+      - img
+      - text: "0"
+  - link "Courses"
+- heading "Contact" [level=1]
+- navigation "Breadcrumbs":
+  - list:
+    - listitem:
+      - link "Home"
+      - text: /
+    - listitem: Contact
+- heading "Address" [level=4]
+- paragraph: Moon Street , 446 Jupiter, JP 44600
+- heading "Email" [level=4]
+- paragraph: zakra@demos.com first.last@demos.com
+- heading "Phone" [level=4]
+- paragraph: "Call : +(123) 456-7890 Call : +977 123-456789"
+- heading "Time" [level=4]
+- paragraph: "Monday - Saturday : 9AM - 6 PM Sunday : Closed"
+- heading "Let's talk" [level=2]
+- paragraph: Turpis dolor, feugiat vehicula sem porttitor aliquet. Et, consectetur ac eu facilisis amet quis. Vitae magnis aliquam, laoreet amet in pulvinar sed praesent.
+- link "call us now"
+- heading "Send Us Message" [level=3]
+- paragraph: Fames in pulvinar eget varius libero, eget non, eget. Ut euismod vitae quam turpis massa aenean.
+- alert:  Thanks for contacting us! We will be in touch with you shortly
+- list:
+  - listitem:
+    - link
+  - listitem:
+    - link
+  - listitem:
+    - link
+  - listitem:
+    - link
+  - listitem:
+    - link
+- contentinfo:
+  - paragraph: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Elit feugiat sit purus varius. Non in turpis tincidunt nulla. Condimentum ultrices nunc odio ante.
+  - heading "Quick Links" [level=2]
+  - list:
+    - listitem:
+      - link "Home"
+    - listitem:
+      - link "About"
+    - listitem:
+      - link "Blog"
+    - listitem:
+      - link "Contact"
+    - listitem:
+      - link "Support Form"
+  - heading "Latest Posts" [level=2]
+  - list:
+    - listitem:
+      - link "IFrame Sample"
+    - listitem:
+      - link "Successful Marketing Ads for Your Business"
+    - listitem:
+      - link "Let’s Building Your Business from Scratch"
+  - heading "Contact Us" [level=2]
+  - paragraph: "Ph. : +(123) 456-7890"
+  - paragraph: "Email : first.last@demos.com"
+  - paragraph: "Loc : Moon Street , 446 Jupiter"
+  - paragraph: "Open : 9AM – 6PM (Mon – Fri)"
+  - paragraph:
+    - text: Copyright © 2020
+    - link "SDET Unicorns"
+- text: desktop
+- status
+```
+
+# Test source
+
+```ts
+   1 | import {test, expect} from "@playwright/test";
+   2 | import { log } from "console";
+   3 | import { off } from "process";
+   4 | import ContactPage from "../pages/contact.page";
+   5 | import { faker } from '@faker-js/faker';
+   6 |
+   7 | let contactPage : ContactPage;
+   8 |
+   9 | test("Create Contact and submit , Exercise", async ({page}) => {
+   10 |
+   11 |     const fields = {
+   12 |         name: "Name",
+   13 |         email: "Email",
+   14 |         phone: "Phone",
+   15 |     };
+   16 |
+   17 |     async function fillContactField(label: string, value: string) {
+   18 |         const requiredContactFields = page.locator(`//div[@class="evf-frontend-grid evf-grid-1"]//span[text()="${label}"]/../following-sibling::input`);
+   19 |         await requiredContactFields.fill(value);
+   20 |     }
+   21 |
+   22 |     const submitButton = page.locator('button', { hasText: 'Submit' });
+   23 |     const contactConfirmation = page.locator('//div[contains(text(),"Thanks for contacting us! We will be in touch with you shortly")]')
+   24 |     //Goto URL
+   25 |     await page.goto("https://practice.sdetunicorns.com");
+   26 |     //Click contact from primary menu
+   27 |     await page.locator('#zak-primary-menu :text("Contact")').click();
+   28 |     //Verify contact page
+   29 |     await expect(page).toHaveTitle("Contact – Practice E-Commerce Site");
+   30 |
+   31 |     await fillContactField(fields.name, "John Doe");
+   32 |     await fillContactField(fields.email, "test@example.com");
+   33 |     await fillContactField(fields.phone, "1234567890");
+   34 |
+   35 |     await submitButton.click();
+   36 |     await expect(contactConfirmation).toBeVisible();
+   37 | })
+   38 |
+   39 | test.describe('Contact', () => {
+   40 |     test('Fill contact form and verify success message', async ({ page }) => {
+   41 |       // open contact page
+   42 |       await page.goto('https://practice.sdetunicorns.com/contact')
+   43 |   
+   44 |       //  fill out the input fields
+   45 |       await page.locator('.contact-name input').fill('Test Name')
+   46 |       await page.locator('.contact-email input').fill('test@mail.com')
+   47 |       await page.locator('.contact-phone input').fill('134567864')
+   48 |       await page.locator('.contact-message textarea').fill('This is a test message')
+   49 |   
+   50 |       // add a soft assertion
+   51 |       await expect.soft(page.locator('.contact-message textarea')).toHaveText("Fail test message")
+   52 |   
+   53 |       // click submit
+   54 |       await page.locator('button[type=submit]').click()
+   55 |   
+>  56 |       expect(test.info().errors.length).toBeLessThan(1)
+      |                                         ^ Error: expect(received).toBeLessThan(expected)
+   57 |   
+   58 |       // verify success message
+   59 |       const successAlert = page.locator('div[role="alert"]')
+   60 |       await expect(successAlert).toHaveText('for contacting us! We will be in touch with you shortly')
+   61 |     })
+   62 | })
+   63 |
+   64 | //debug
+   65 | test.describe('Contact Debug Trace', () => {
+   66 |     test('Fill contact form and verify success message', async ({ page }) => {
+   67 |       // open contact page
+   68 |       await page.goto('https://practice.sdetunicorns.com/contact')
+   69 |
+   70 |       //  fill out the input fields
+   71 |       await page.locator('.contact-name input').fill('Test Name')
+   72 |       await page.locator('.contact-email input').fill('test@mail.com')
+   73 |       await page.locator('.contact-phone input').fill('134567864')
+   74 |       await page.locator('.contact-message textarea').fill('This is a test message')
+   75 |   
+   76 |       // add a soft assertion
+   77 |     //   await expect.soft(page.locator('.contact-message textarea')).toHaveText("Fail test message")
+   78 |   
+   79 |       // click submit
+   80 |       await page.locator('button[type=submit]').click()
+   81 |   
+   82 |       expect(test.info().errors.length).toBeLessThan(1)
+   83 |   
+   84 |       // verify success message
+   85 |       const successAlert = page.locator('div[role="alert"]')
+   86 |       await expect(successAlert).toContainText('Thanks for contacting us!l')
+   87 |     })
+   88 | })
+   89 |
+   90 | test.describe('Contact with POM test', () => {
+   91 |   test('Fill contact form and verify success message', async ({ page }) => {
+   92 |     let contactPage = new ContactPage(page);
+   93 |
+   94 |     await contactPage.navigateToContact();
+   95 |
+   96 |     await contactPage.submitForm(faker.person.fullName(),faker.internet.email(),faker.phone.number(),faker.lorem.sentence())
+   97 |
+   98 |     expect(test.info().errors.length).toBeLessThan(1)
+   99 |
+  100 |     // verify success message
+  101 |     await expect(contactPage.successAlert).toContainText('Thanks for contacting us!')
+  102 |   })
+  103 | })
+```

@@ -1,0 +1,283 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Upload File Wait >> Wait for state
+- Location: /Users/renzdeleon/Documents/GitHub/Learn-PLaywright/tests/upload.spec.ts:61:9
+
+# Error details
+
+```
+TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
+Call log:
+  - waiting for locator('#wfu_messageblock_header_1_label_1') to be visible
+
+    at /Users/renzdeleon/Documents/GitHub/Learn-PLaywright/tests/upload.spec.ts:77:14
+```
+
+# Page snapshot
+
+```yaml
+- link "Skip to content"
+- banner:
+  - link "Practice E-Commerce Site":
+    - img "Practice E-Commerce Site"
+  - paragraph:
+    - link "Practice E-Commerce Site"
+  - paragraph: SDET Unicorns
+  - navigation:
+    - list:
+      - listitem:
+        - link "Home"
+      - listitem:
+        - link "About"
+      - listitem:
+        - link "Shop"
+      - listitem:
+        - link "Blog"
+      - listitem:
+        - link "Contact"
+      - listitem:
+        - link "My account"
+  - link:
+    - img
+  - listitem:
+    - link "0":
+      - img
+      - text: "0"
+  - link "Courses"
+- heading "Cart" [level=1]
+- navigation "Breadcrumbs":
+  - list:
+    - listitem:
+      - link "Home"
+      - text: /
+    - listitem: Cart
+- main:
+  - article:
+    - table:
+      - rowgroup:
+        - row "Upload files":
+          - cell "Upload files"
+    - table:
+      - rowgroup:
+        - row "3mb-file.pdf Select File Upload File":
+          - cell "3mb-file.pdf":
+            - textbox: 3mb-file.pdf
+          - cell "Select File":
+            - button "Select File" [disabled]
+          - cell "Upload File":
+            - button "Upload File" [disabled]
+    - table:
+      - rowgroup:
+        - row "Uploading...":
+          - cell "Uploading...":
+            - table:
+              - rowgroup:
+                - row "Uploading...":
+                  - cell "Uploading..."
+    - text:  Your cart is currently empty.
+    - paragraph:
+      - link "Return to shop"
+- complementary:
+  - search:
+    - text: "Search for:"
+    - searchbox "Search for:"
+    - button "Search"
+  - heading "Products" [level=2]
+  - list:
+    - listitem:
+      - link "Zurich Watch"
+      - text: $200.00
+    - listitem:
+      - link "Watch"
+      - text: $50.00
+    - listitem:
+      - link "Converse"
+      - text: $120.00
+    - listitem:
+      - link "Toys"
+      - text: $50.00
+    - listitem:
+      - link "Canon Antique Camera"
+      - text: "Original price was: $500.00. Current price is: $400.00."
+  - heading "Product categories" [level=2]
+  - list:
+    - listitem:
+      - link "Clothes"
+    - listitem:
+      - link "Shoes"
+    - listitem:
+      - link "Uncategorized"
+    - listitem:
+      - link "Watch"
+- contentinfo:
+  - paragraph: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Elit feugiat sit purus varius. Non in turpis tincidunt nulla. Condimentum ultrices nunc odio ante.
+  - heading "Quick Links" [level=2]
+  - list:
+    - listitem:
+      - link "Home"
+    - listitem:
+      - link "About"
+    - listitem:
+      - link "Blog"
+    - listitem:
+      - link "Contact"
+    - listitem:
+      - link "Support Form"
+  - heading "Latest Posts" [level=2]
+  - list:
+    - listitem:
+      - link "IFrame Sample"
+    - listitem:
+      - link "Successful Marketing Ads for Your Business"
+    - listitem:
+      - link "Let’s Building Your Business from Scratch"
+  - heading "Contact Us" [level=2]
+  - paragraph: "Ph. : +(123) 456-7890"
+  - paragraph: "Email : first.last@demos.com"
+  - paragraph: "Loc : Moon Street , 446 Jupiter"
+  - paragraph: "Open : 9AM – 6PM (Mon – Fri)"
+  - paragraph:
+    - text: Copyright © 2020
+    - link "SDET Unicorns"
+- status
+```
+
+# Test source
+
+```ts
+   1 | import { test, expect } from '@playwright/test';
+   2 | import exp from 'constants';
+   3 | import CartPage from '../pages/cart.page';
+   4 | const path = require('path')
+   5 |
+   6 | test.describe('Upload File', () => {
+   7 |     test('Upload File', async ({ page }) => {
+   8 |         //Goto URL
+   9 |         await page.goto("https://practice.sdetunicorns.com/cart/");
+   10 |         //Confirm correct URL
+   11 |         await expect(page).toHaveTitle("Cart – Practice E-Commerce Site");
+   12 |
+   13 |         //Provide path for the sample file to be uploaded
+   14 |         const filePath = path.join(__dirname,'../data/logotitle.png');
+   15 |
+   16 |         //Upload input file  
+   17 |         await page.setInputFiles('input#upfile_1', filePath);
+   18 |
+   19 |         //Upload File
+   20 |         await page.locator('input#upload_1').click();
+   21 |         
+   22 |         //Assert file upload
+   23 |         await expect(page.locator('#wfu_messageblock_header_1_label_1'))
+   24 |         .toContainText('File logotitle.png uploaded successfully');
+   25 |     })
+   26 | })
+   27 |
+   28 | test.describe('Upload File from hidden path', () => {
+   29 |     test('Upload hidden file', async ({ page }) => {
+   30 |         //Goto URL
+   31 |         await page.goto("https://practice.sdetunicorns.com/cart/");
+   32 |         //Confirm correct URL
+   33 |         await expect(page).toHaveTitle("Cart – Practice E-Commerce Site");
+   34 |
+   35 |         //Provide path for the sample file to be uploaded
+   36 |         const filePath = path.join(__dirname,'../data/logotitle.png');
+   37 |
+   38 |         //Manipulate DOM if input file is hidded and not interactable
+   39 |         await page.evaluate(() => {
+   40 |             const selector = document.querySelector('input#upfile_1');
+   41 |             if(selector){
+   42 |                 selector.className = ''
+   43 |             }
+   44 |         })
+   45 |
+   46 |         //Upload input file
+   47 |         await page.setInputFiles('input#upfile_1', filePath);
+   48 |
+   49 |         //Upload File
+   50 |         await page.locator('input#upload_1').click();
+   51 |         
+   52 |         //Assert file upload
+   53 |         await expect(page.locator('#wfu_messageblock_header_1_label_1'))
+   54 |         .toContainText('File logotitle.png uploaded successfully');
+   55 |     })
+   56 | })
+   57 |
+   58 | test.describe('Upload File Wait', () => {
+   59 |     let cartPage : CartPage;
+   60 |
+   61 |     test('Wait for state', async ({ page }) => {
+   62 |         //Goto URL
+   63 |         await page.goto("https://practice.sdetunicorns.com/cart/");
+   64 |         //Confirm correct URL
+   65 |         await expect(page).toHaveTitle("Cart – Practice E-Commerce Site");
+   66 |
+   67 |         //Provide path for the sample file to be uploaded
+   68 |         const filePath = path.join(__dirname,'../data/3mb-file.pdf');
+   69 |
+   70 |         //Upload input file  
+   71 |         await page.setInputFiles('input#upfile_1', filePath);
+   72 |
+   73 |         //Upload File
+   74 |         await page.locator('input#upload_1').click();
+   75 |         
+   76 |         await page.locator('#wfu_messageblock_header_1_label_1')
+>  77 |             .waitFor({ state: 'visible', timeout: 10000})
+      |              ^ TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
+   78 |
+   79 |         //Assert file upload
+   80 |         await expect(page.locator('#wfu_messageblock_header_1_label_1'))
+   81 |         .toContainText('uploaded successfully');
+   82 |     })
+   83 |
+   84 |     test('Assertion Timeout', async ({ page }) => {
+   85 |         //Goto URL
+   86 |         await page.goto("https://practice.sdetunicorns.com/cart/");
+   87 |         //Confirm correct URL
+   88 |         await expect(page).toHaveTitle("Cart – Practice E-Commerce Site");
+   89 |
+   90 |         //Provide path for the sample file to be uploaded
+   91 |         const filePath = path.join(__dirname,'../data/3mb-file.pdf');
+   92 |
+   93 |         //Upload input file  
+   94 |         await page.setInputFiles('input#upfile_1', filePath);
+   95 |
+   96 |         //Upload File
+   97 |         await page.locator('input#upload_1').click();
+   98 |
+   99 |         //Assert file upload
+  100 |         await expect(page.locator('#wfu_messageblock_header_1_label_1'))
+  101 |         .toContainText('uploaded successfully', {timeout: 15000});
+  102 |     })
+  103 | })
+  104 |
+  105 | test.describe('Upload Multiple File', () => {
+  106 |     let cartPage : CartPage;
+  107 |
+  108 |     const fileName = ['logotitle.png','3mb-file.pdf']
+  109 |
+  110 |     for (const name of fileName) {
+  111 |         test(`Should upload a ${name}`, async ({ page }) => {
+  112 |             cartPage = new CartPage(page);
+  113 |             //Goto URL
+  114 |             await page.goto("https://practice.sdetunicorns.com/cart/");
+  115 |             //Confirm correct URL
+  116 |             await expect(page).toHaveTitle("Cart – Practice E-Commerce Site");
+  117 |
+  118 |             //Provide path for the sample file to be uploaded
+  119 |             const filePath = path.join(__dirname,`../data/${name}`);
+  120 |
+  121 |             cartPage.uploadComponent().uploadFile(filePath);
+  122 |
+  123 |             //Assert file upload
+  124 |             await expect(cartPage.uploadComponent().successTxt)
+  125 |             .toContainText('uploaded successfully', {timeout: 15000});
+  126 |         })
+  127 |     }
+  128 | })
+```

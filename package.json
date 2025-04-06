@@ -9,10 +9,12 @@
   "description": "",
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
-    "@playwright/test": "^1.49.0",
+    "@playwright/test": "^1.51.1",
     "@types/node": "^22.9.0",
     "@typescript-eslint/eslint-plugin": "^8.28.0",
     "@typescript-eslint/parser": "^8.28.0",
+    "allure-commandline": "^2.33.0",
+    "allure-playwright": "^3.2.1",
     "eslint": "^9.23.0",
     "eslint-plugin-playwright": "^2.2.0"
   },
