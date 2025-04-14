@@ -32,9 +32,10 @@ jobs:
           name: Test-Results
           path: test-results
 
-      - name: Upload Allure HTML Report
+      - name: Upload Allure Report
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: Allure-HTML-Report
-          path: allure-report
+            name: Allure-HTML-Report
+            path: allure-report
+        
