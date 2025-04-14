@@ -15,9 +15,11 @@ jobs:
                 run: npx playwright install --with-deps
             -   name: Run tests with xvfb
                 run: xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' npx playwright test tests/home.spec.ts
-            -   name: Upload Test Results
+            -   name: Generate Allure HTML Report
+                run: npx allure generate test-results --clean -o allure-report
+            -   name: Upload Allure HTML Report
                 if: always()
                 uses: actions/upload-artifact@v2
                 with:
-                  name: Test-Results
-                  path: test-results
+                  name: Allure-Report
+                  path: allure-report
