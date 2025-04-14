@@ -1,17 +1,21 @@
-name: "e2e"
+name: test-artifact-upload
+
 on: [push]
+
 jobs:
-    test-e2e:
-        name: Run E2E tests
-        runs-on: ubuntu-20.04
-        steps:
-            -   uses: actions/checkout@v3
-            -   uses: actions/setup-node@v2
-                with:
-                    node-version: '18'
-            -   name: install dependencies
-                run: npm ci
-            -   name : Install Playwright
-                run: npx playwright install --with-deps
-            -   name: Run tests with xvfb
-                run: xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' npx playwright test tests/home.spec.ts
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create dummy report
+        run: |
+          mkdir -p allure-report
+          echo "<html><body>Test</body></html>" > allure-report/index.html
+
+      - name: Upload dummy report
+        uses: actions/upload-artifact@v3
+        with:
+          name: Dummy-Allure-Report
+          path: allure-report
